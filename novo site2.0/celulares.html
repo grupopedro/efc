@@ -1,0 +1,131 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tok Assistência - Reparos para Celulares</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <span class="company-name">Tok Assistência</span>
+        </div>
+        <nav>
+            <div class="menu-toggle">☰</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="index.html#escolha-seu-reparo">Serviços</a></li>
+                <li><a href="index.html#sobre-nos">Sobre Nós</a></li>
+                <li><a href="index.html#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="services-list">
+        <h1>Reparos para Celulares</h1>
+        <ul>
+            <li>Troca de Tela: Substituição de telas quebradas ou com defeito (incluindo telas AMOLED, LCD, etc.).</li>
+            <li>Troca de Bateria: Substituição de baterias desgastadas ou com falhas.</li>
+            <li>Reparo de Conector de Carga: Conserto de portas de carregamento com defeito ou quebradas.</li>
+            <li>Reparo de Botões: Conserto ou substituição de botões físicos que não funcionam corretamente, como botão de home ou de volume.</li>
+            <li>Reparo de Câmeras: Conserto de câmeras dianteira e traseira que não estão funcionando corretamente.</li>
+            <li>Substituição de Placa-mãe: Reparo ou troca da placa-mãe em caso de falha de hardware grave.</li>
+            <li>Troca de Fones de Ouvido e Conectores de Áudio: Conserto de fones de ouvido ou entradas de áudio que não estão funcionando.</li>
+            <li>Reparo de Falhas de Software: Correção de problemas no sistema operacional, como travamentos, lentidão ou problemas de atualização.</li>
+            <li>Reparo de Tela com Mancha ou Falha de Toque: Conserto de telas com manchas, linhas ou problemas no toque.</li>
+            <li>Recuperação de Dados: Recuperação de dados importantes de celulares danificados ou com sistemas falhos.</li>
+            <li>Desbloqueio de Celular: Desbloqueio de aparelhos que estão com bloqueio de operadora ou sistema de segurança.</li>
+        </ul>
+        <a href="index.html#contato" class="btn">Solicitar Atendimento</a>
+    </section>
+
+    <section class="portfolio">
+        <h2>Serviços Realizados</h2>
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <img src="images/telacelular.jpg" alt="Reparo de Celular" class="portfolio-image">
+                <p>Reparo de Tela de Celular</p>
+            </div>
+            <div class="portfolio-item">
+                <img src="images/soft.jpg" alt="Substituição de Bateria" class="portfolio-image">
+                <p>Conserto de Software</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+      <p>Tok Assistência - Desde 2002</p>
+        <p>Localização: Av. João Ísper Gebrim - Formosinha, Formosa - GO, 73813-210</p>
+    </footer>
+
+    <a href="https://api.whatsapp.com/send?phone=5561994647621&amp;text=Olá,%20tudo%20bem%3F%20Preciso%20de%20um%20orçamento%20" target="_blank" class="whatsapp-float">
+        <img src="images/zap.png" alt="WhatsApp">
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animação de fade-in ao rolar
+            window.addEventListener('scroll', () => {
+                document.querySelectorAll('section, .services-list').forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top < window.innerHeight) {
+                        section.classList.add('fade-in');
+                    }
+                });
+            });
+
+            // Forçar carregamento inicial
+            document.querySelectorAll('section, .services-list').forEach(section => {
+                section.classList.add('fade-in');
+            });
+
+            // Menu hambúrguer
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

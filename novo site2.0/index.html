@@ -1,0 +1,205 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tok Assistência</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <span class="company-name">Tok Assistência</span>
+        </div>
+        <nav>
+            <div class="menu-toggle">☰</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="#escolha-seu-reparo">Serviços</a></li>
+                <li><a href="#sobre-nos">Sobre Nós</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="carousel">
+        <img src="images/imagem1.jpg" alt="Imagem 1" class="carousel-image">
+        <img src="images/imagem3.png" alt="Imagem 2" class="carousel-image">
+        <img src="images/imagem4.png" alt="Imagem 3" class="carousel-image">
+        <img src="images/imagem5.png" alt="Imagem 3" class="carousel-image">
+    </div>
+
+    <div class="main-content">
+        <h1>Tok Assistência: Manutenção Especializada</h1>
+        <p>Conte com nossa experiência para manutenção profissional de computadores e celulares, otimizando o desempenho dos seus dispositivos.</p>
+        <a href="#contato" class="btn">Solicitar Atendimento</a>
+    </div>
+
+    <section class="services" id="escolha-seu-reparo">
+        <h2>Escolha seu Reparo</h2>
+        <div class="services-grid">
+            <a href="celulares.html" class="service-item" style="background-image: url(images/celulare.png);">
+                <h3>Para Celulares</h3>
+            </a>
+            <a href="notebooks.html" class="service-item" style="background-image: url(images/notebookre.png);">
+                <h3>Para Notebooks</h3>
+            </a>
+        </div>
+    </section>
+
+    <section class="about" id="sobre-nos">
+        <h2>Sobre Nós</h2>
+            <div class="caixa-texto" id="sobre nós">
+                <p>A Tok Assistência é referência em manutenção de computadores e celulares desde 2002. Com mais de 20 anos de experiência, contamos com uma equipe altamente qualificada e apaixonada por tecnologia, pronta para oferecer soluções personalizadas que garantem o máximo desempenho e a longevidade dos seus dispositivos.
+
+                <p>Nosso compromisso é proporcionar a melhor experiência para nossos clientes, com serviços rápidos, confiáveis e sempre inovadores. Valorizamos a qualidade em cada detalhe e buscamos superar as expectativas, oferecendo soluções precisas e eficientes para cada necessidade.</p>
+
+                <p>Tok Assistência, a sua satisfação é nossa prioridade.</p>
+            </div>
+    </section>
+
+    <!-- Adicionando mais conteúdo para empurrar a seção "Contato" para baixo -->
+
+    <section class="contact" id="contato">
+        <h2>Contato</h2>
+        <div class="contact-grid">
+            <div class="contact-methods">
+                <div class="contact-item">
+                    <img src="images/tel.png" alt="Telefone">
+                    <p>Telefone: (61) 9 9464-7624</p>
+                </div>
+                <div class="contact-item">
+                    <a href="https://api.whatsapp.com/send?phone=5561994647621&amp;text=Olá,%20tudo%20bem%3F%20Preciso%20de%20um%20orçamento%20" target="_blank">
+                        <img src="images/zap.png" alt="WhatsApp">
+                        <p>WhatsApp: (61) 9464-7624</p>
+                    </a>
+                </div>
+            </div>
+            <section class="address">
+                <h2>Endereço</h2>
+                <div class="address-grid-template">
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d960.964395703387!2d-47.3296105!3d-15.5457636!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9350a378e33cdb47%3A0xe78e11e455cf902e!2sTok%20cellular!5e0!3m2!1spt-BR!2sbr!4v1749676662409!5m2!1spt-BR!2sbr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="address-text">
+                        <p>Horario de Funcionamento: </p> <p>Segunda a Sexta 08:00 as 12:00 - 13:00 as 18:00</p>
+                        <p>Av. João Isper Gebrim, Formosa - GO</p>
+                        <p>Referência: Em frente a Casa Dos Bolos</p>
+                        <p>CEP: 73813-210</p>
+                        </div>
+
+                  
+            </section>
+        </div>
+    </section>
+
+    <footer>
+        <p>Direitos Reservados - Tok Assistência</p>
+    </footer>
+
+     <a href="https://api.whatsapp.com/send?phone=5561994647621&amp;text=Olá,%20tudo%20bem%3F%20Preciso%20de%20um%20orçamento%20" target="_blank" class="whatsapp-float">
+        <img src="images/zap.png" alt="WhatsApp">
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = document.querySelectorAll('.carousel-image');
+            let currentIndex = 0;
+
+            function showNextImage() {
+                images[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % images.length;
+                images[currentIndex].classList.add('active');
+            }
+
+            images[currentIndex].classList.add('active');
+            setInterval(showNextImage, 5000);
+
+            // Animação de fade-in ao rolar
+            window.addEventListener('scroll', () => {
+                document.querySelectorAll('section, .main-content, .services-list').forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top < window.innerHeight) {
+                        section.classList.add('fade-in');
+                    }
+                });
+            });
+
+            // Forçar carregamento inicial
+            document.querySelectorAll('section, .main-content, .services-list').forEach(section => {
+                section.classList.add('fade-in');
+            });
+
+            // Menu hambúrguer
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        });
+            const carrosselImagens = document.querySelector('.carrossel-imagens');
+
+let posicaoAtual = 0;
+const numeroImagens = carrosselImagens.children.length;
+
+// Adicionando uma transição suave para o carrossel
+carrosselImagens.style.transition = 'transform 0.5s ease';
+
+// Função para mover para a próxima imagem
+function moverParaProximaImagem() {
+  posicaoAtual++;
+  if (posicaoAtual >= numeroImagens) {
+    posicaoAtual = 0; // Volta para a primeira imagem
+  }
+  carrosselImagens.style.transform = `translateX(-${posicaoAtual * 100}%)`;
+}
+
+// Chama a função moverParaProximaImagem a cada 3 segundos
+setInterval(moverParaProximaImagem, 3000); // 3000ms = 3 segundos
+
+
+
+// Para um carrossel infinito, você pode adicionar um loop
+// para que as imagens continuem rolando mesmo no final.
+    </script>
+</body>
+</html>
